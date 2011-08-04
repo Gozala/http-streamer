@@ -1,0 +1,34 @@
+{
+  "name": "http-streamer",
+  "id": "http-streamer",
+  "version": "0.0.1",
+  "description": "HTTP as a stream.",
+  "keywords": [ "http", "stream" ],
+  "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
+  "homepage": "https://github.com/Gozala/http-streamer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gozala/http-streamer.git",
+    "web": "https://github.com/Gozala/http-streamer"
+  },
+  "bugs": {
+    "web": "http://github.com/Gozala/http-streamer/issues/"
+  },
+  "devDependencies": {
+    "test": ">=0.0.10"
+  },
+  "dependencies": {
+    "streamer": ">=0.0.4"
+  },
+  "main": "./http-streamer.js",
+  "engines": {
+    "node": "0.4.x"
+  },
+  "scripts": {
+    "test": "node tests/test-http-streamer.js"
+  },
+  "licenses": [{
+    "type" : "MIT",
+    "url" : "http://jeditoolkit.com/LICENSE"
+  }]
+}
