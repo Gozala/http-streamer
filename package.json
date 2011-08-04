@@ -20,7 +20,7 @@
   "dependencies": {
     "streamer": ">=0.0.4"
   },
-  "main": "./http-streamer.js",
+  "main": "./index.js",
   "engines": {
     "node": "0.4.x"
   },

@@ -5,7 +5,7 @@
 
 "use strict";
 
-var http = require('../http-streamer')
+var http = require('../http')
 var server = http.server(function(request) {
   return {
     status: 200,
