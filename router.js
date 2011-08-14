@@ -7,9 +7,6 @@
 
 var METHODS = [ 'get', 'post', 'delete', 'options' ]
 
-var functional = require('functional')
-var find = functional.find
-
 var register = (function (handlers, pattern, handler) {
   handlers.push([ pattern, handler ])
 })
@@ -34,13 +31,18 @@ function isMatchingRequest(pattern, request) {
   )
 }
 
+function findMatchingHandler(routes, request) {
+  var route = routes.shift()
+  return isMatchingRequest(route[0], request) ? route[1] :
+         !routes.length ? defaultHandler : findMatchingHandler(routes, request)
+}
+
 exports.router = function router(handler) {
-  var routes = {}
-  handler(registrar(routes))
+  var routeRegistry = {}
+  handler(registrar(routeRegistry))
 
   return function handler(request) {
-    return (find(routes[request.method.toLowerCase()], function(route) {
-      return isMatchingRequest(route[0], request)
-    }) || [ '*', defaultHandler ])[1](request)
+    var routes = routeRegistry[request.method.toLowerCase()].slice()
+    return findMatchingHandler(routes, request)(request)
   }
 }
