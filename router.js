@@ -33,7 +33,7 @@ function isMatchingRequest(pattern, request) {
 
 function findMatchingHandler(routes, request) {
   var route = routes.shift()
-  return isMatchingRequest(route[0], request) ? route[1] :
+  return route && isMatchingRequest(route[0], request) ? route[1] :
          !routes.length ? defaultHandler : findMatchingHandler(routes, request)
 }
 
