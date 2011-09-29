@@ -31,15 +31,19 @@ function pairs(object, callback) {
   })
 }
 
-// Turns an object into its URL-encoded query string representation.
 function query(object) {
+  /**
+  Turns an object into its URL-encoded query string representation.
+  **/
   return pairs(object).map(function(pair) {
     return pair.map(encodeURIComponent).join('=')
   }).join('&')
 }
 
-// Turns an object to multiple part message with a single body
 function multipart(object) {
+  /**
+  Turns an `object` to multiple part message with a single body.
+  **/
   return pairs(object).map(function(pair) {
     return [
       pair[1].body + '--frontier\r\n',
@@ -50,8 +54,10 @@ function multipart(object) {
   }).join('') + '--frontier--'
 }
 
-// Normalize options passed to the request.
 function Options(options) {
+  /**
+  Normalizes `options` passed to the request.
+  **/
   var uri, path, host, port, method, headers, body
 
   options = typeof(options) === 'object' ? options : { url: String(options) }
@@ -101,11 +107,54 @@ function Options(options) {
   }
 }
 
+exports.abort = function abort(request) {
+  /**
+  Aborts given http request.
+
+  Usage:
+
+  var http = require('http-streamer/request')
+  var streamer = require('streamer')
+
+  var request = http.get('http://google.com')
+  streamer.print(request)
+  http.abort(request)
+  **/
+  request.request.abort()
+}
+
 exports.request = function request(options) {
+  /**
+  Takes request `options` and returns stream representing a response to this
+  HTTP request. Passed `options` may be either URL string to which request will
+  be sent or an object contain following properties:
+    - `url` The URL string to which request will be send.
+    - `method` The HTTP method (defaults to 'GET'): 'POST', 'GET', 'PUT'...
+    - `headers` The map of HTTP headers to be send.
+  If response is successful, returned stream will yield object containing
+  following properties:
+    - `status` The status of the response to this HTTP request.
+    - `head` The map of all headers for this HTTP request.
+    - `body` The stream of response body for this HTTP request.
+  If request fails, response stream is stopped with reason of failure.
+
+  Usage:
+
+
+  var s = require('streamer'),
+      merge = s.merge, print = s.print, map = s.map
+  var http = require('http-streamer/request')
+
+  // create a response steam
+  var request = http.request({ url: 'http://google.com', method: 'GET' })
+  // Take first element from response stream (we know there is only one)
+  var body = merge(map(function($) { return $.body }, request))
+  print(body)
+  **/
   options = Options(options)
   var binding = 'https:' === options.uri.protocol ? https : http
   return function stream(next, stop) {
-    var request = binding.request(options)
+    var request = stream.request = binding.request(options)
     request.on('response', function onRespose(response) {
       stop(next({
         status: response.statusCode,
@@ -126,21 +175,29 @@ exports.request = function request(options) {
   }
 }
 
+// Generating sugared wrappers of `request` for each common HTTP method.
 ![ GET, POST, HEAD, PUT, DELETE ].forEach(function(method) {
   exports[method.toLowerCase()] = function(options) {
+    /**
+    Creates request with a method matching a function name. This is a just a
+    little sugar on top of `request` see it for more details.
+
+    Usage:
+
+    var s = require('streamer'),
+            merge = s.merge, print = s.print, map = s.map
+    var http = require('http-streamer/request')
+
+    // create a response steam (could be post / put / head ... instead)
+    var request = http.get('http://google.com')
+    // Take first element from response stream (we know there is only one)
+    var body = merge(map(function($) { return $.body }, request))
+    print(body)
+    **/
     options.method = method
     return exports.request(options)
   }
 })
 
-/* Example that print body response body:
-var s = require('streamer'),
-    merge = s.merge, print = s.print, map = s.map
-var get = require('./request').get
-
-// create a response steam
-var request = get('http://google.com')
-// Take first element from response stream (we know there is only 
-var body = merge(map(request, function($) { return $.body }))
-print(body)
-*/
+// Creating alias for the `delete` as `http.delete(..)` will be invalid.
+exports.del = exports['delete']
