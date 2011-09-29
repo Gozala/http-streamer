@@ -14,6 +14,9 @@ var text = streamer.list
 // Sinatra like routing!
 var server = http.server(logger(router(function(routes) {
   var get = routes.get
+  var post = routes.post
+
+  // curl http://localhost:8080
   get('/', function(request) {
     return {
       status: 200,
@@ -21,6 +24,8 @@ var server = http.server(logger(router(function(routes) {
       body: 'Hello world'
     }
   })
+
+  // curl http://localhost:8080/hello-async
   get(/[\s\S]*async/, function(request) {
     return {
       status: 200,
@@ -31,7 +36,9 @@ var server = http.server(logger(router(function(routes) {
       }
     }
   })
-  get('/wrap', function(request) {
+
+  // curl -d 'hello world' http://localhost:8080/wrap
+  post('/wrap', function(request) {
     return {
       status: 200,
       head: { 'ContentType': 'text/plain' },

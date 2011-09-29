@@ -7,12 +7,14 @@
 
 var http = require('../server')
 
-// asynchronous response
-// High order function returns a stream of the given
-// `sentence`  that yields each word after given `delay`.
 function text(sentence, delay) {
+  /**
+  Takes `sentence` string and returns stream that yields each word from the
+  given `sentence` with a given `delay`.
+  **/
   return function stream(next, stop) {
     var words = sentence.split(' ')
+    next(words.shift() + '\n')
     setTimeout(function onTimeout() {
       next(words.shift() + '\n')
       if (words.length) setTimeout(onTimeout, delay)
@@ -22,10 +24,12 @@ function text(sentence, delay) {
 }
 
 var server = http.server(function(request) {
-  // If any attribute is a function than it's assumed to be a steram and it is streamed!
+
+  // If any property of response is a function it will be assumed to be a
+  // stream!
   return {
     status: 200,
     head: { 'ContentType': 'text/plain' },
-    body: text('hello world', 10)
+    body: text('hello world', 500)
   }
 }, 8080)
