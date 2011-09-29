@@ -27,21 +27,21 @@ function request(raw) {
 
 exports.server = curry(function server(handler, port) {
   var rawServer = http.createServer()
-  rawServer.on('request', function onRequest(rawRequest, response) {
-    var data = handler(request(rawRequest))
-    stream(data.status)(function(status) {
-      response.statusCode = status
+  rawServer.on('request', function onRequest(rawRequest, rawResponse) {
+    var response = handler(request(rawRequest))
+    stream(response.status)(function(status) {
+      rawResponse.statusCode = status
     })
-    stream(data.head)(function(head) {
+    stream(response.head)(function(head) {
       return head && Object.keys(head).forEach(function(name) {
-        response.setHeader(name, head[name])
+        rawResponse.setHeader(name, head[name])
       })
     })
-    stream(data.body)(function(data) {
-      response.write(data)
+    stream(response.body)(function(data) {
+      rawResponse.write(data)
     }, function onStop(error) {
-      if (error) response.statusCode = 500
-      response.end()
+      if (error) rawResponse.statusCode = 500
+      rawResponse.end()
     })
   })
   rawServer.listen(port)

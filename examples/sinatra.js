@@ -5,7 +5,7 @@
 
 "use strict";
 
-var http = require('../http')
+var http = require('../server')
 var router = require('../router').router
 var logger = require('../logger').logger
 var streamer = require('streamer')

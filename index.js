@@ -5,6 +5,6 @@
 
 "use strict";
 
-exports.server = require('./http').server
+exports.server = require('./server').server
 exports.router = require('./router').router
 exports.logger = require('./logger').logger

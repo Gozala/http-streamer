@@ -5,7 +5,7 @@
 
 "use strict";
 
-var http = require('../http')
+var http = require('../server')
 
 // asynchronous response
 // High order function returns a stream of the given
